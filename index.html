@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Qatar Interview Guide</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff5f8;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 32px;
+            box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #fce7f3;
+            border-radius: 10px;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .tab-active {
+            background: white;
+            color: #db2777; /* pink-600 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="relative z-10 max-w-4xl mx-auto py-12 px-4 sm:px-6">
+        <!-- Main Job Selector -->
+        <div class="flex justify-center gap-4 mb-10">
+            <button id="btn-keshab" onclick="switchCandidate('keshab')" class="flex-1 py-4 rounded-3xl font-black transition-all border-2 border-white bg-white/50 text-pink-400">
+                <i data-lucide="package" class="inline mr-2 w-5 h-5"></i> KESHAB (STORE)
+            </button>
+            <button id="btn-ashok" onclick="switchCandidate('ashok')" class="flex-1 py-4 rounded-3xl font-black transition-all border-2 border-white bg-white/50 text-pink-400">
+                <i data-lucide="coffee" class="inline mr-2 w-5 h-5"></i> ASHOK (WAITER)
+            </button>
+        </div>
+
+        <!-- Candidate Header -->
+        <header id="header-section" class="mb-8 flex flex-col md:flex-row items-center gap-6 bg-white/40 p-6 rounded-[32px] border border-white">
+            <!-- Dynamic Content -->
+        </header>
+
+        <!-- Sub Navigation -->
+        <div id="sub-nav" class="flex bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white mb-8 w-fit mx-auto md:md-0">
+            <!-- Dynamic Content -->
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="content-area" class="glass p-8 min-h-[400px]">
+            <!-- Dynamic Content -->
+        </div>
+
+        <!-- Final Tip -->
+        <div class="mt-8 p-6 bg-pink-600 text-white rounded-[32px] shadow-2xl flex items-center gap-6 animate-float">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                <i data-lucide="trophy"></i>
+            </div>
+            <div>
+                <p class="font-black text-lg">Stay Confident!</p>
+                <p class="text-pink-100 text-sm">Review this guide daily. Qatar is a land of opportunity—show them your best smile!</p>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-pink-400 text-xs font-bold uppercase tracking-widest">
+            © 2026 Interview Success Guide • Nepal-Qatar Mission
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const candidates = {
+            keshab: {
+                name: "Keshab Chaudhary",
+                location: "Janakpur, Nepal",
+                education: "+2 (Higher Secondary)",
+                job: "Storekeeper",
+                questions: [
+                    { q: "Tell us about yourself?", a: "I am Keshab Chaudhary from Janakpur. I finished my +2 and I am very organized. I want to work as a Storekeeper in Qatar to manage inventory efficiently." },
+                    { q: "What is FIFO?", a: "It stands for First-In, First-Out. It means we use the oldest stock first so nothing expires or gets wasted." },
+                    { q: "What are Storekeeper duties?", a: "Receiving goods, checking for damage, updating records in Excel/System, and keeping the warehouse safe and clean." },
+                    { q: "How do you handle stock discrepancy?", a: "I re-count the items, check the recent invoices for mistakes, and report any missing items to the manager immediately." },
+                    { q: "Why Qatar?", a: "Qatar has a great work culture and I want to build my career in a professional international environment." }
+                ]
+            },
+            ashok: {
+                name: "Ashok Kumar Mahato",
+                location: "Sarlahi, Nepal",
+                education: "Class 10 (Secondary Level)",
+                job: "Waiter",
+                responsibilities: [
+                    "Greeting and seating guests with a friendly smile.",
+                    "Presenting menus and explaining daily specials or ingredients.",
+                    "Taking accurate food and drink orders using a notepad or digital system.",
+                    "Serving food and beverages promptly while maintaining high hygiene standards.",
+                    "Clearing tables, resetting cutlery, and ensuring the dining area is clean.",
+                    "Handling bills and processing payments accurately.",
+                    "Communicating guest needs clearly to the kitchen staff.",
+                    "Providing 'Silver Service' or 'Plate Service' as per hotel standards."
+                ],
+                questions: [
+                    { q: "Can you tell us about yourself?", a: "My name is Ashok Kumar Mahato from Sarlahi. I have completed my Class 10. I am a friendly and hardworking person with a passion for hospitality. I want to work as a Waiter in Qatar to provide excellent service to guests." },
+                    { q: "What does 'Good Service' mean to you?", a: "Good service means greeting guests with a smile, being fast with orders, ensuring the food is correct, and making sure the guest leaves happy." },
+                    { q: "How do you handle a difficult or angry customer?", a: "I stay calm and listen politely. I apologize for the issue and try to fix it immediately. If I cannot solve it, I call my supervisor to help the guest." },
+                    { q: "How do you handle multiple tables at once?", a: "I prioritize. I take orders for one table while delivering drinks to another. I stay organized and always keep moving to ensure no guest is waiting too long." },
+                    { q: "What do you do if you drop a plate or spill a drink?", a: "First, I apologize to the guest. Then, I clean it up immediately to ensure safety, inform the kitchen to replace the order, and make sure the guest is comfortable." },
+                    { q: "How do you describe a dish to a guest?", a: "I explain the main ingredients, how it is cooked (grilled, fried, or baked), and if it is spicy or vegetarian so the guest can choose easily." }
+                ]
+            }
+        };
+
+        const serviceEquipment = [
+            { name: "Tray", meaning: "A flat board used to carry many plates or glasses safely.", icon: "🍱" },
+            { name: "Cutlery", meaning: "Knives, forks, and spoons used for eating.", icon: "🍴" },
+            { name: "Crockery", meaning: "Plates, bowls, and cups made of ceramic.", icon: "🥣" },
+            { name: "Napkin", meaning: "Cloth used by guests to wipe their hands or mouth.", icon: "🧺" },
+            { name: "Menu", meaning: "List of food and drinks available with prices.", icon: "📜" },
+            { name: "Bill/Check", meaning: "Paper showing how much the guest needs to pay.", icon: "💵" },
+            { name: "Water Goblet", meaning: "Glass specifically for serving water.", icon: "🍷" },
+            { name: "Sideboard", meaning: "Table where extra cutlery and napkins are kept.", icon: "🗄️" },
+            { name: "Service Cloth", meaning: "White towel to protect hands from hot plates.", icon: "🧤" },
+            { name: "Wine Glass", meaning: "Specifically shaped glass for red or white wine.", icon: "🍸" },
+            { name: "Champagne Flute", meaning: "Tall, narrow glass for sparkling wines.", icon: "🥂" },
+            { name: "Bread Basket", meaning: "Container for serving fresh bread to the table.", icon: "🍞" },
+            { name: "Ice Bucket", meaning: "Used to keep wine or beer cold at the table.", icon: "🧊" },
+            { name: "Salt & Pepper", meaning: "Standard shakers for table seasoning.", icon: "🧂" },
+            { name: "POS Terminal", meaning: "Handheld machine for orders and payments.", icon: "💳" },
+            { name: "Crumber", meaning: "Small tool to brush crumbs off the table.", icon: "🧹" },
+            { name: "Decanter", meaning: "Glass vessel for aerating and serving wine.", icon: "🏺" },
+            { name: "Pepper Mill", meaning: "Grinder for fresh black peppercorns.", icon: "🌶️" },
+            { name: "Coaster", meaning: "Small mat placed under drinks to protect tables.", icon: "⏺️" },
+            { name: "Ramekin", meaning: "Small dish for serving sauces or butter.", icon: "🏺" }
+        ];
+
+        // --- STATE ---
+        let state = {
+            currentCandidate: 'keshab',
+            currentTab: 'intro'
+        };
+
+        // --- RENDER FUNCTIONS ---
+        function switchCandidate(cid) {
+            state.currentCandidate = cid;
+            state.currentTab = 'intro';
+            updateUI();
+        }
+
+        function switchTab(tid) {
+            state.currentTab = tid;
+            updateUI();
+        }
+
+        function updateUI() {
+            const current = candidates[state.currentCandidate];
+            
+            // Update Candidate Buttons
+            document.getElementById('btn-keshab').className = `flex-1 py-4 rounded-3xl font-black transition-all border-2 ${state.currentCandidate === 'keshab' ? 'bg-pink-600 text-white border-pink-600 shadow-xl scale-105' : 'bg-white/50 text-pink-400 border-white hover:bg-white'}`;
+            document.getElementById('btn-ashok').className = `flex-1 py-4 rounded-3xl font-black transition-all border-2 ${state.currentCandidate === 'ashok' ? 'bg-pink-600 text-white border-pink-600 shadow-xl scale-105' : 'bg-white/50 text-pink-400 border-white hover:bg-white'}`;
+
+            // Render Header
+            document.getElementById('header-section').innerHTML = `
+                <div class="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                    ${current.name.charAt(0)}
+                </div>
+                <div class="text-center md:text-left">
+                    <h1 class="text-3xl font-black text-slate-900">${current.name}</h1>
+                    <p class="text-pink-600 font-bold flex items-center justify-center md:justify-start gap-1">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i> ${current.location} • <i data-lucide="graduation-cap" class="w-4 h-4"></i> ${current.education}
+                    </p>
+                </div>
+                <div class="md:ml-auto flex gap-2">
+                    <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full text-xs font-black uppercase tracking-widest border border-pink-200 shadow-sm">
+                        ${current.job}
+                    </span>
+                </div>
+            `;
+
+            // Render Sub Nav
+            let tabs = ['intro', 'qa'];
+            if (state.currentCandidate === 'ashok') {
+                tabs = ['intro', 'roles', 'qa', 'equip'];
+            }
+            
+            document.getElementById('sub-nav').innerHTML = tabs.map(t => {
+                const labels = { intro: 'Introduction', roles: 'Responsibilities', qa: 'Interview Q&A', equip: 'Equipment' };
+                return `
+                    <button onclick="switchTab('${t}')" class="px-6 py-2 rounded-xl font-bold transition-all ${state.currentTab === t ? 'tab-active' : 'text-slate-500'}">
+                        ${labels[t]}
+                    </button>
+                `;
+            }).join('');
+
+            // Render Content
+            const contentArea = document.getElementById('content-area');
+            if (state.currentTab === 'intro') {
+                contentArea.innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="text-pink-500"></i> Self-Introduction Script
+                        </h2>
+                        <div class="bg-slate-900 text-white p-8 rounded-[32px] shadow-2xl relative overflow-hidden">
+                            <p class="text-xl leading-relaxed italic font-medium relative z-10">
+                                "Good day, Sir. I am <span class="text-pink-400 font-bold">${current.name}</span> originally from <span className="text-pink-400 font-bold">${current.location}</span>. I have successfully completed my <span class="text-pink-400 font-bold">${current.education}</span>. I am applying for the <span class="underline decoration-pink-500 decoration-4">${current.job}</span> position because I am hardworking, punctual, and very eager to work in Qatar's sector. I look forward to contributing to your team."
+                            </p>
+                            <div class="mt-8 flex gap-4">
+                                <span class="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-tighter"><i data-lucide="check-circle" class="w-4 h-4 text-pink-500"></i> Confidence</span>
+                                <span class="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-tighter"><i data-lucide="check-circle" class="w-4 h-4 text-pink-500"></i> Smile</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (state.currentTab === 'roles') {
+                contentArea.innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="list-checks" class="text-pink-500"></i> ${current.job} Responsibilities
+                        </h2>
+                        <div class="grid grid-cols-1 gap-4">
+                            ${current.responsibilities.map((role, idx) => `
+                                <div class="flex items-center gap-4 bg-white/60 p-4 rounded-2xl border border-white hover:bg-pink-50 transition-colors">
+                                    <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">${idx + 1}</div>
+                                    <p class="text-slate-700 font-semibold">${role}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (state.currentTab === 'qa') {
+                contentArea.innerHTML = `
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-black text-slate-900">Important Interview Q&A</h2>
+                        <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            ${current.questions.map((item, idx) => `
+                                <div class="bg-white/60 p-5 rounded-3xl border border-white transition-all">
+                                    <div class="flex gap-4 mb-3">
+                                        <span class="w-8 h-8 rounded-xl bg-pink-500 text-white flex items-center justify-center font-black text-xs shrink-0">Q${idx+1}</span>
+                                        <p class="font-black text-slate-800 pt-1 text-sm uppercase">${item.q}</p>
+                                    </div>
+                                    <div class="ml-12 p-4 bg-white/80 rounded-2xl border-l-4 border-pink-400 shadow-inner italic text-slate-600 text-sm">"${item.a}"</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (state.currentTab === 'equip') {
+                contentArea.innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="utensils" class="text-pink-500"></i> Comprehensive Equipment Guide
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            ${serviceEquipment.map(item => `
+                                <div class="bg-white/80 p-4 rounded-3xl border border-white flex gap-4 shadow-sm hover:scale-[1.02] transition-transform">
+                                    <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">${item.icon}</div>
+                                    <div>
+                                        <h4 class="font-black text-pink-600 uppercase tracking-tighter">${item.name}</h4>
+                                        <p class="text-xs text-slate-500 leading-tight mt-1">${item.meaning}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            lucide.createIcons();
+        }
+
+        // --- THREE.JS ENGINE ---
+        function initThree() {
+            const canvas = document.querySelector('#bg-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xdb2777, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            // Objects: Floating Glass Spheres
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const shapes = [];
+
+            for (let i = 0; i < 15; i++) {
+                const material = new THREE.MeshPhysicalMaterial({
+                    color: 0xfce7f3,
+                    metalness: 0,
+                    roughness: 0.2,
+                    transparent: true,
+                    opacity: 0.4,
+                    transmission: 0.8,
+                    clearcoat: 1.0,
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                mesh.position.set(
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 10
+                );
+                
+                const scale = Math.random() * 2;
+                mesh.scale.set(scale, scale, scale);
+                
+                mesh.velocity = {
+                    x: (Math.random() - 0.5) * 0.01,
+                    y: (Math.random() - 0.5) * 0.01,
+                    z: (Math.random() - 0.5) * 0.01
+                };
+
+                scene.add(mesh);
+                shapes.push(mesh);
+            }
+
+            camera.position.z = 8;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                shapes.forEach(shape => {
+                    shape.position.x += shape.velocity.x;
+                    shape.position.y += shape.velocity.y;
+                    shape.rotation.x += 0.005;
+                    shape.rotation.y += 0.005;
+
+                    // Bound checking
+                    if (Math.abs(shape.position.x) > 12) shape.velocity.x *= -1;
+                    if (Math.abs(shape.position.y) > 12) shape.velocity.y *= -1;
+                });
+
+                // Subtle camera movement
+                camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            initThree();
+            updateUI();
+        };
+    </script>
+</body>
+</html>
