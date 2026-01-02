@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Qatar Interview Guide</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,58 +11,94 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --pink-primary: #db2777;
+            --pink-light: #fce7f3;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+        }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #fff5f8;
             margin: 0;
             overflow-x: hidden;
+            color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: -1;
+            pointer-events: none;
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 32px;
-            box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(219, 39, 119, 0.15);
         }
 
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #fce7f3;
+            background: #f472b6;
             border-radius: 10px;
         }
 
         .animate-float {
-            animation: float 6s ease-in-out infinite;
+            animation: float 5s ease-in-out infinite;
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
         }
 
         .tab-active {
             background: white;
-            color: #db2777; /* pink-600 */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            color: var(--pink-primary);
+            box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+            transform: scale(1.02);
+        }
+
+        /* Responsive adjustments for mobile touch targets */
+        @media (max-width: 640px) {
+            .glass {
+                border-radius: 20px;
+                padding: 1.25rem !important;
+            }
+            .nav-button {
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+        }
+
+        /* Button hover states */
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:active {
+            transform: scale(0.96);
+        }
+
+        .card-entry {
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .card-entry:hover {
+            background: rgba(255, 255, 255, 0.8);
         }
     </style>
 </head>
@@ -70,45 +106,49 @@
     <!-- Three.js Background -->
     <canvas id="bg-canvas"></canvas>
 
-    <div class="relative z-10 max-w-4xl mx-auto py-12 px-4 sm:px-6">
+    <div class="relative z-10 max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
         <!-- Main Job Selector -->
-        <div class="flex justify-center gap-4 mb-10">
-            <button id="btn-keshab" onclick="switchCandidate('keshab')" class="flex-1 py-4 rounded-3xl font-black transition-all border-2 border-white bg-white/50 text-pink-400">
-                <i data-lucide="package" class="inline mr-2 w-5 h-5"></i> KESHAB (STORE)
+        <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+            <button id="btn-keshab" onclick="switchCandidate('keshab')" class="btn-hover flex-1 py-4 px-6 rounded-2xl font-extrabold flex items-center justify-center gap-2 border-2 border-white/50 bg-white/40 text-pink-400">
+                <i data-lucide="package" class="w-5 h-5"></i> KESHAB (STORE)
             </button>
-            <button id="btn-ashok" onclick="switchCandidate('ashok')" class="flex-1 py-4 rounded-3xl font-black transition-all border-2 border-white bg-white/50 text-pink-400">
-                <i data-lucide="coffee" class="inline mr-2 w-5 h-5"></i> ASHOK (WAITER)
+            <button id="btn-ashok" onclick="switchCandidate('ashok')" class="btn-hover flex-1 py-4 px-6 rounded-2xl font-extrabold flex items-center justify-center gap-2 border-2 border-white/50 bg-white/40 text-pink-400">
+                <i data-lucide="coffee" class="w-5 h-5"></i> ASHOK (WAITER)
             </button>
         </div>
 
         <!-- Candidate Header -->
-        <header id="header-section" class="mb-8 flex flex-col md:flex-row items-center gap-6 bg-white/40 p-6 rounded-[32px] border border-white">
+        <header id="header-section" class="mb-6 sm:mb-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-white/50 p-5 sm:p-7 rounded-[28px] border border-white/60 shadow-sm">
             <!-- Dynamic Content -->
         </header>
 
-        <!-- Sub Navigation -->
-        <div id="sub-nav" class="flex bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white mb-8 w-fit mx-auto md:md-0">
-            <!-- Dynamic Content -->
+        <!-- Sub Navigation - Scrollable on mobile -->
+        <div class="overflow-x-auto no-scrollbar mb-6 sm:mb-8">
+            <div id="sub-nav" class="flex bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white/60 w-max mx-auto sm:mx-0 min-w-full sm:min-w-0">
+                <!-- Dynamic Content -->
+            </div>
         </div>
 
         <!-- Main Content Area -->
-        <div id="content-area" class="glass p-8 min-h-[400px]">
+        <div id="content-area" class="glass p-5 sm:p-10 min-h-[450px]">
             <!-- Dynamic Content -->
         </div>
 
-        <!-- Final Tip -->
-        <div class="mt-8 p-6 bg-pink-600 text-white rounded-[32px] shadow-2xl flex items-center gap-6 animate-float">
-            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                <i data-lucide="trophy"></i>
+        <!-- Final Tip Box -->
+        <div class="mt-8 p-5 sm:p-6 bg-gradient-to-r from-pink-600 to-rose-500 text-white rounded-[28px] shadow-xl flex items-center gap-4 sm:gap-6 animate-float">
+            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+                <i data-lucide="award" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="font-black text-lg">Stay Confident!</p>
-                <p class="text-pink-100 text-sm">Review this guide daily. Qatar is a land of opportunity—show them your best smile!</p>
+                <p class="font-extrabold text-base sm:text-lg tracking-tight">Success Mindset</p>
+                <p class="text-pink-50/90 text-xs sm:text-sm leading-relaxed">Prepare well, dress professionally, and remember that confidence is 50% of the interview.</p>
             </div>
         </div>
 
-        <footer class="mt-8 text-center text-pink-400 text-xs font-bold uppercase tracking-widest">
-            © 2026 Interview Success Guide • Nepal-Qatar Mission
+        <footer class="mt-10 text-center">
+            <p class="text-pink-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                © 2026 Interactive Career Portal • Nepal-Qatar
+            </p>
         </footer>
     </div>
 
@@ -164,26 +204,18 @@
         };
 
         const serviceEquipment = [
-            { name: "Tray", meaning: "A flat board used to carry many plates or glasses safely.", icon: "🍱" },
-            { name: "Cutlery", meaning: "Knives, forks, and spoons used for eating.", icon: "🍴" },
-            { name: "Crockery", meaning: "Plates, bowls, and cups made of ceramic.", icon: "🥣" },
-            { name: "Napkin", meaning: "Cloth used by guests to wipe their hands or mouth.", icon: "🧺" },
-            { name: "Menu", meaning: "List of food and drinks available with prices.", icon: "📜" },
-            { name: "Bill/Check", meaning: "Paper showing how much the guest needs to pay.", icon: "💵" },
-            { name: "Water Goblet", meaning: "Glass specifically for serving water.", icon: "🍷" },
-            { name: "Sideboard", meaning: "Table where extra cutlery and napkins are kept.", icon: "🗄️" },
-            { name: "Service Cloth", meaning: "White towel to protect hands from hot plates.", icon: "🧤" },
-            { name: "Wine Glass", meaning: "Specifically shaped glass for red or white wine.", icon: "🍸" },
-            { name: "Champagne Flute", meaning: "Tall, narrow glass for sparkling wines.", icon: "🥂" },
-            { name: "Bread Basket", meaning: "Container for serving fresh bread to the table.", icon: "🍞" },
-            { name: "Ice Bucket", meaning: "Used to keep wine or beer cold at the table.", icon: "🧊" },
-            { name: "Salt & Pepper", meaning: "Standard shakers for table seasoning.", icon: "🧂" },
-            { name: "POS Terminal", meaning: "Handheld machine for orders and payments.", icon: "💳" },
-            { name: "Crumber", meaning: "Small tool to brush crumbs off the table.", icon: "🧹" },
-            { name: "Decanter", meaning: "Glass vessel for aerating and serving wine.", icon: "🏺" },
-            { name: "Pepper Mill", meaning: "Grinder for fresh black peppercorns.", icon: "🌶️" },
-            { name: "Coaster", meaning: "Small mat placed under drinks to protect tables.", icon: "⏺️" },
-            { name: "Ramekin", meaning: "Small dish for serving sauces or butter.", icon: "🏺" }
+            { name: "Tray", meaning: "A flat board used to carry plates safely.", icon: "🍱" },
+            { name: "Cutlery", meaning: "Knives, forks, and spoons for dining.", icon: "🍴" },
+            { name: "Crockery", meaning: "Ceramic plates, bowls, and coffee cups.", icon: "🥣" },
+            { name: "Napkin", meaning: "Cloth for guest hygiene during meals.", icon: "🧺" },
+            { name: "Menu", meaning: "List of food items and prices.", icon: "📜" },
+            { name: "Bill Folder", meaning: "For presenting the check to the guest.", icon: "💵" },
+            { name: "Water Goblet", meaning: "Specific glass for drinking water.", icon: "🍷" },
+            { name: "Sideboard", meaning: "Storage for spare napkins/cutlery.", icon: "🗄️" },
+            { name: "Service Cloth", meaning: "Protecting hands from hot dishes.", icon: "🧤" },
+            { name: "Ice Bucket", meaning: "Keeping beverages chilled.", icon: "🧊" },
+            { name: "POS Terminal", meaning: "Digital device for taking orders.", icon: "💳" },
+            { name: "Pepper Mill", meaning: "Grinding fresh pepper at the table.", icon: "🌶️" }
         ];
 
         // --- STATE ---
@@ -207,73 +239,74 @@
         function updateUI() {
             const current = candidates[state.currentCandidate];
             
-            // Update Candidate Buttons
-            document.getElementById('btn-keshab').className = `flex-1 py-4 rounded-3xl font-black transition-all border-2 ${state.currentCandidate === 'keshab' ? 'bg-pink-600 text-white border-pink-600 shadow-xl scale-105' : 'bg-white/50 text-pink-400 border-white hover:bg-white'}`;
-            document.getElementById('btn-ashok').className = `flex-1 py-4 rounded-3xl font-black transition-all border-2 ${state.currentCandidate === 'ashok' ? 'bg-pink-600 text-white border-pink-600 shadow-xl scale-105' : 'bg-white/50 text-pink-400 border-white hover:bg-white'}`;
+            // Update Candidate Toggle Buttons
+            document.getElementById('btn-keshab').className = `btn-hover flex-1 py-4 px-6 rounded-2xl font-extrabold flex items-center justify-center gap-2 border-2 transition-all ${state.currentCandidate === 'keshab' ? 'bg-pink-600 text-white border-pink-600 shadow-lg' : 'bg-white/40 text-pink-400 border-white/50 hover:bg-white/60'}`;
+            document.getElementById('btn-ashok').className = `btn-hover flex-1 py-4 px-6 rounded-2xl font-extrabold flex items-center justify-center gap-2 border-2 transition-all ${state.currentCandidate === 'ashok' ? 'bg-pink-600 text-white border-pink-600 shadow-lg' : 'bg-white/40 text-pink-400 border-white/50 hover:bg-white/60'}`;
 
-            // Render Header
+            // Header Render
             document.getElementById('header-section').innerHTML = `
-                <div class="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                <div class="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl flex items-center justify-center text-white text-3xl font-extrabold shadow-lg shrink-0">
                     ${current.name.charAt(0)}
                 </div>
-                <div class="text-center md:text-left">
-                    <h1 class="text-3xl font-black text-slate-900">${current.name}</h1>
-                    <p class="text-pink-600 font-bold flex items-center justify-center md:justify-start gap-1">
-                        <i data-lucide="map-pin" class="w-4 h-4"></i> ${current.location} • <i data-lucide="graduation-cap" class="w-4 h-4"></i> ${current.education}
-                    </p>
+                <div class="text-center sm:text-left flex-1">
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1">${current.name}</h1>
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-pink-600 font-bold text-sm">
+                        <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4"></i> ${current.location}</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="graduation-cap" class="w-4 h-4"></i> ${current.education}</span>
+                    </div>
                 </div>
-                <div class="md:ml-auto flex gap-2">
-                    <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full text-xs font-black uppercase tracking-widest border border-pink-200 shadow-sm">
+                <div class="shrink-0">
+                    <span class="px-5 py-2 bg-white text-pink-600 rounded-full text-xs font-black uppercase tracking-widest border border-pink-100 shadow-sm">
                         ${current.job}
                     </span>
                 </div>
             `;
 
-            // Render Sub Nav
+            // Sub-nav Render
             let tabs = ['intro', 'qa'];
             if (state.currentCandidate === 'ashok') {
                 tabs = ['intro', 'roles', 'qa', 'equip'];
             }
             
-            document.getElementById('sub-nav').innerHTML = tabs.map(t => {
-                const labels = { intro: 'Introduction', roles: 'Responsibilities', qa: 'Interview Q&A', equip: 'Equipment' };
-                return `
-                    <button onclick="switchTab('${t}')" class="px-6 py-2 rounded-xl font-bold transition-all ${state.currentTab === t ? 'tab-active' : 'text-slate-500'}">
-                        ${labels[t]}
-                    </button>
-                `;
-            }).join('');
+            const labels = { intro: 'Profile', roles: 'Duties', qa: 'Interview Q&A', equip: 'Tools' };
+            document.getElementById('sub-nav').innerHTML = tabs.map(t => `
+                <button onclick="switchTab('${t}')" class="nav-button px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${state.currentTab === t ? 'tab-active' : 'text-slate-500 hover:text-pink-400'}">
+                    ${labels[t]}
+                </button>
+            `).join('');
 
-            // Render Content
+            // Content Area Render
             const contentArea = document.getElementById('content-area');
             if (state.currentTab === 'intro') {
                 contentArea.innerHTML = `
-                    <div class="space-y-6">
-                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
-                            <i data-lucide="sparkles" class="text-pink-500"></i> Self-Introduction Script
+                    <div class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="text-pink-500"></i> Introduction Script
                         </h2>
-                        <div class="bg-slate-900 text-white p-8 rounded-[32px] shadow-2xl relative overflow-hidden">
-                            <p class="text-xl leading-relaxed italic font-medium relative z-10">
-                                "Good day, Sir. I am <span class="text-pink-400 font-bold">${current.name}</span> originally from <span class="text-pink-400 font-bold">${current.location}</span>. I have successfully completed my <span class="text-pink-400 font-bold">${current.education}</span>. I am applying for the <span class="underline decoration-pink-500 decoration-4">${current.job}</span> position because I am hardworking, punctual, and very eager to work in Qatar's sector. I look forward to contributing to your team."
+                        <div class="bg-slate-900 text-white p-6 sm:p-10 rounded-[32px] shadow-2xl relative overflow-hidden">
+                            <i data-lucide="quote" class="absolute -top-4 -left-4 w-24 h-24 text-white/5 opacity-20"></i>
+                            <p class="text-lg sm:text-2xl leading-relaxed italic font-medium relative z-10 text-slate-100">
+                                "Good day, Sir. My name is <span class="text-pink-400 font-extrabold underline underline-offset-4 decoration-pink-500/30">${current.name}</span>, originally from <span class="text-pink-400 font-extrabold">${current.location}</span>. I have completed <span class="text-pink-400 font-extrabold">${current.education}</span>. I am applying for the <span class="bg-pink-500/20 px-2 rounded-lg border border-pink-500/20">${current.job}</span> position because I am hardworking, punctual, and highly committed to delivering quality results in Qatar."
                             </p>
-                            <div class="mt-8 flex gap-4">
-                                <span class="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-tighter"><i data-lucide="check-circle" class="w-4 h-4 text-pink-500"></i> Confidence</span>
-                                <span class="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-tighter"><i data-lucide="check-circle" class="w-4 h-4 text-pink-500"></i> Smile</span>
+                            <div class="mt-8 flex flex-wrap gap-4 pt-6 border-t border-white/10">
+                                <span class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest"><i data-lucide="check" class="w-4 h-4 text-pink-500"></i> Clear Voice</span>
+                                <span class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest"><i data-lucide="check" class="w-4 h-4 text-pink-500"></i> Eye Contact</span>
+                                <span class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest"><i data-lucide="check" class="w-4 h-4 text-pink-500"></i> Big Smile</span>
                             </div>
                         </div>
                     </div>
                 `;
             } else if (state.currentTab === 'roles') {
                 contentArea.innerHTML = `
-                    <div class="space-y-6">
-                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
-                            <i data-lucide="list-checks" class="text-pink-500"></i> ${current.job} Responsibilities
+                    <div class="space-y-6 animate-in fade-in duration-500">
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="briefcase" class="text-pink-500"></i> Core Responsibilities
                         </h2>
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-1 gap-3">
                             ${current.responsibilities.map((role, idx) => `
-                                <div class="flex items-center gap-4 bg-white/60 p-4 rounded-2xl border border-white hover:bg-pink-50 transition-colors">
-                                    <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">${idx + 1}</div>
-                                    <p class="text-slate-700 font-semibold">${role}</p>
+                                <div class="card-entry flex items-start gap-4 bg-white/50 p-4 rounded-2xl border border-white/80 shadow-sm">
+                                    <div class="w-8 h-8 bg-pink-500 rounded-xl flex items-center justify-center text-white font-black text-xs shrink-0 shadow-md shadow-pink-200">${idx + 1}</div>
+                                    <p class="text-slate-700 font-semibold text-sm sm:text-base leading-snug pt-1">${role}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -281,16 +314,21 @@
                 `;
             } else if (state.currentTab === 'qa') {
                 contentArea.innerHTML = `
-                    <div class="space-y-4">
-                        <h2 class="text-2xl font-black text-slate-900">Important Interview Q&A</h2>
-                        <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="space-y-6 animate-in fade-in duration-500">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-black text-slate-900">Interview Training</h2>
+                            <span class="text-[10px] font-bold text-pink-500 bg-pink-50 px-3 py-1 rounded-full uppercase">Practice Mode</span>
+                        </div>
+                        <div class="space-y-5 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             ${current.questions.map((item, idx) => `
-                                <div class="bg-white/60 p-5 rounded-3xl border border-white transition-all">
-                                    <div class="flex gap-4 mb-3">
-                                        <span class="w-8 h-8 rounded-xl bg-pink-500 text-white flex items-center justify-center font-black text-xs shrink-0">Q${idx+1}</span>
-                                        <p class="font-black text-slate-800 pt-1 text-sm uppercase">${item.q}</p>
+                                <div class="bg-white/60 p-5 rounded-[24px] border border-white/80 shadow-sm">
+                                    <div class="flex gap-4 mb-4">
+                                        <div class="shrink-0 w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-black text-[10px]">Q${idx+1}</div>
+                                        <h3 class="font-black text-slate-800 text-sm sm:text-base leading-tight pt-1.5">${item.q}</h3>
                                     </div>
-                                    <div class="ml-12 p-4 bg-white/80 rounded-2xl border-l-4 border-pink-400 shadow-inner italic text-slate-600 text-sm">"${item.a}"</div>
+                                    <div class="ml-4 sm:ml-12 p-5 bg-white/90 rounded-2xl border-l-4 border-pink-500 shadow-inner">
+                                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed italic">"${item.a}"</p>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -298,17 +336,17 @@
                 `;
             } else if (state.currentTab === 'equip') {
                 contentArea.innerHTML = `
-                    <div class="space-y-6">
-                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
-                            <i data-lucide="utensils" class="text-pink-500"></i> Comprehensive Equipment Guide
+                    <div class="space-y-6 animate-in fade-in duration-500">
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <i data-lucide="box" class="text-pink-500"></i> Essential Equipment
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             ${serviceEquipment.map(item => `
-                                <div class="bg-white/80 p-4 rounded-3xl border border-white flex gap-4 shadow-sm hover:scale-[1.02] transition-transform">
-                                    <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">${item.icon}</div>
-                                    <div>
-                                        <h4 class="font-black text-pink-600 uppercase tracking-tighter">${item.name}</h4>
-                                        <p class="text-xs text-slate-500 leading-tight mt-1">${item.meaning}</p>
+                                <div class="bg-white/80 p-5 rounded-2xl border border-white flex items-center gap-5 shadow-sm hover:translate-y-[-2px] transition-transform">
+                                    <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner shrink-0">${item.icon}</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-black text-pink-600 uppercase tracking-tight text-sm mb-0.5">${item.name}</h4>
+                                        <p class="text-xs text-slate-500 leading-tight font-medium">${item.meaning}</p>
                                     </div>
                                 </div>
                             `).join('')}
@@ -328,60 +366,60 @@
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performance optimization
 
             // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-
-            const pointLight = new THREE.PointLight(0xdb2777, 1);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const pointLight = new THREE.PointLight(0xdb2777, 0.8);
             pointLight.position.set(5, 5, 5);
             scene.add(pointLight);
 
-            // Objects: Floating Glass Spheres
+            // Floating Spheres
             const geometry = new THREE.SphereGeometry(1, 32, 32);
             const shapes = [];
 
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 12; i++) {
                 const material = new THREE.MeshPhysicalMaterial({
                     color: 0xfce7f3,
-                    metalness: 0,
-                    roughness: 0.2,
+                    metalness: 0.1,
+                    roughness: 0.1,
                     transparent: true,
-                    opacity: 0.4,
+                    opacity: 0.35,
                     transmission: 0.8,
-                    clearcoat: 1.0,
+                    thickness: 0.5,
                 });
                 const mesh = new THREE.Mesh(geometry, material);
                 
+                const range = 15;
                 mesh.position.set(
-                    (Math.random() - 0.5) * 20,
-                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * range,
+                    (Math.random() - 0.5) * range,
                     (Math.random() - 0.5) * 10
                 );
                 
-                const scale = Math.random() * 2;
+                const scale = 0.5 + Math.random() * 1.5;
                 mesh.scale.set(scale, scale, scale);
                 
                 mesh.velocity = {
-                    x: (Math.random() - 0.5) * 0.01,
-                    y: (Math.random() - 0.5) * 0.01,
-                    z: (Math.random() - 0.5) * 0.01
+                    x: (Math.random() - 0.5) * 0.005,
+                    y: (Math.random() - 0.5) * 0.005,
+                    z: (Math.random() - 0.5) * 0.005
                 };
 
                 scene.add(mesh);
                 shapes.push(mesh);
             }
 
-            camera.position.z = 8;
+            camera.position.z = 10;
 
-            // Mouse interaction
-            let mouseX = 0;
-            let mouseY = 0;
-            window.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-                mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-            });
+            let mouseX = 0, mouseY = 0;
+            const handleMove = (x, y) => {
+                mouseX = (x / window.innerWidth - 0.5) * 2;
+                mouseY = (y / window.innerHeight - 0.5) * 2;
+            };
+
+            window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+            window.addEventListener('touchstart', (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY));
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -389,18 +427,15 @@
                 shapes.forEach(shape => {
                     shape.position.x += shape.velocity.x;
                     shape.position.y += shape.velocity.y;
-                    shape.rotation.x += 0.005;
-                    shape.rotation.y += 0.005;
+                    shape.rotation.y += 0.003;
 
-                    // Bound checking
-                    if (Math.abs(shape.position.x) > 12) shape.velocity.x *= -1;
-                    if (Math.abs(shape.position.y) > 12) shape.velocity.y *= -1;
+                    if (Math.abs(shape.position.x) > 10) shape.velocity.x *= -1;
+                    if (Math.abs(shape.position.y) > 10) shape.velocity.y *= -1;
                 });
 
-                // Subtle camera movement
-                camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
-                camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
-                camera.lookAt(scene.position);
+                camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.05;
+                camera.lookAt(0, 0, 0);
 
                 renderer.render(scene, camera);
             }
@@ -411,6 +446,7 @@
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             });
         }
 
